@@ -1,0 +1,30 @@
+name: Create Pull Request from Fork
+
+on:
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target repo
+        uses: actions/checkout@v5
+        with:
+          repository: LibreELEC/testrepo2
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add fork remote and fetch branch
+        run: |
+          git remote add fork https://github.com/LibreELEC/workflows.git
+          git fetch fork test123:test123
+          
+      - name: Create Pull Request
+        run: |
+          gh pr create \
+            --repo LibreELEC/testrepo2 \
+            --head test123 \
+            --base master \
+            --title "PR from fork branch test123" \
+            --body "Automatically created pull request from LibreELEC/workflows:test123"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
